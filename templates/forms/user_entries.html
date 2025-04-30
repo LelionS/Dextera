@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Entries</title>
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 0.85rem; /* Smaller overall font */
+        }
+
+        .dataTables_wrapper {
+            max-width: 80%;
+            margin: auto;
+        }
+
+        table.dataTable {
+            font-size: 0.75rem; /* Smaller table font */
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        table.dataTable tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dataTables_paginate .paginate_button {
+            background-color: #007bff;
+            border-radius: 50%;
+            padding: 6px 10px; /* Smaller pagination buttons */
+            margin: 2px;
+            color: white;
+            font-size: 0.75rem; /* Smaller font */
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .dataTables_paginate .paginate_button:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+        }
+
+        .dataTables_paginate .paginate_button.current {
+            background-color: #28a745;
+        }
+
+        /* Arrows for pagination */
+        .dataTables_paginate .paginate_button.previous::before {
+            content: "\f104"; /* Left Arrow */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+        }
+
+        .dataTables_paginate .paginate_button.next::before {
+            content: "\f105"; /* Right Arrow */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+        }
+
+        .modal-content {
+        border-radius: 12px;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+        border: none;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .modal-header {
+        background-color: #007bff;
+        color: white;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+    }
+
+    .modal-header .btn-close {
+        filter: invert(1);
+    }
+
+    .modal-body {
+        padding: 20px;
+        background-color: #f8f9fa;
+    }
+
+    /* Styling for Form */
+    #editForm input, #editForm select, #editForm textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+
+    #editForm input:focus, #editForm select:focus, #editForm textarea:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
+    }
+
+    #editForm button {
+        width: 100%;
+        background-color: #28a745;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    #editForm button:hover {
+        background-color: #218838;
+        transform: scale(1.02);
+    }
+
+    /* Modal Animation */
+    .modal.fade .modal-dialog {
+        transform: translateY(-50px);
+        opacity: 0;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .modal.show .modal-dialog {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    </style>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+</head>
+<body class="container">
+    <!-- Data Table -->
+    <table id="weeklyEntries" class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <p>
+                <a href="{% url 'week_form' %}">Back Home</a>
+            </p>
+            <tr>
+                <th>Week</th>
+                <th>House</th> <!-- New Column -->
+                <th>Bay</th>
+                <th>Bed</th>
+                <th>Variety</th>
+                <th>Amounts</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in entries %}
+            <tr>
+                <td>{{ entry.week }}</td>
+                <td>{{ entry.bay.house.name }}</td> <!-- Display House Name -->
+                <td>{{ entry.bay.name }}</td>
+                <td>{{ entry.bed.code }}</td>
+                <td>{{ entry.variety.name }}</td>
+                <td>{{ entry.amounts }}</td>
+                <td>
+                    {% if entry.is_editable %}
+                        <button class="btn btn-sm btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editModal"
+                                data-url="{% url 'edit_entry' entry.id %}">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    {% else %}
+                        <span class="badge bg-secondary"><i class="fas fa-lock"></i> Locked</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">No entries found</td> <!-- Adjust colspan -->
+            </tr>
+            {% endfor %}
+        </tbody>
+        
+    </table>
+
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm" method="post">
+                        {% csrf_token %}
+                        <div id="editFormContent">
+                            <!-- House Field -->
+                            <div class="mb-3">
+                                <label for="house" class="form-label">House</label>
+                                <select name="house" id="house" class="form-select" required>
+                                    {% for house in houses %}
+                                        <option value="{{ house.id }}" {% if house.id == entry.bay.house.id %} selected {% endif %}>
+                                            {{ house.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+    
+                            <!-- Other Fields (Variety, Amount, etc.) -->
+                            <div class="mb-3">
+                                <label for="variety" class="form-label">Variety</label>
+                                <input type="text" name="variety" id="variety" class="form-control" value="{{ entry.variety.name }}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="amounts" class="form-label">Amount</label>
+                                <input type="number" name="amounts" id="amounts" class="form-control" value="{{ entry.amounts }}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="text" name="date" id="date" class="form-control" value="{{ entry.week }}" readonly>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTable with search only
+            $('#weeklyEntries').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "lengthMenu": [5, 10, 25],
+                "dom": 'frtip' // Removes export buttons, keeps search
+            });
+
+            // Load form into modal when Edit button is clicked
+            $('.edit-btn').click(function () {
+                var url = $(this).data('url');
+                $('#editForm').attr('action', url);
+
+                // Fetch form using AJAX
+                $.get(url, function (data) {
+                    $('#editFormContent').html(data);
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

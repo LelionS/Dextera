@@ -1,0 +1,159 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShowHouse Entry Form</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', Arial, sans-serif; }
+        body { background: #f4f4f4; padding: 5px; }
+
+        .container { margin: auto; background: #fff; padding: 10px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+        h2 { text-align: center; color: #333; margin-bottom: 15px; }
+
+        form { display: flex; flex-direction: column; gap: 12px; }
+        label { font-size: 14px; font-weight: 600; color: #555; }
+        select, input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; background: #f9f9f9; }
+        select:focus, input:focus { border-color: #4CAF50; outline: none; }
+        button { width: 100%; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s ease; }
+        button:hover { background: #2E8B57; }
+
+        .user-info { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #333; margin-bottom: 10px; }
+        .user-info a { color: #4CAF50; text-decoration: none; font-weight: bold; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 350px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 style="color: #2E8B57; text-align: left;">Olij Propagation Kenya</h2>
+        <div class="user-info">
+            <span>Hi, {{ request.user.first_name }}</span>
+            <a href="{% url 'user_entries_list' %}"><i class="fas fa-list" style="margin-left: 140px;"></i> Entries</a>
+            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    
+        <form id="weekEntryForm" method="post">
+            {% csrf_token %}
+            
+            <label for="variety">Variety (Autocomplete):</label>
+            <input type="text" id="variety" placeholder="Start typing a variety..." required>
+            <input type="hidden" name="variety" id="variety_id">
+
+            <label for="amounts">Amounts:</label>
+            <input type="number" id="amounts" name="amounts" required>
+    
+            <label for="date">Date (Week Number and Year):</label>
+            <input type="text" id="date" name="date" required readonly>
+    
+            <input type="hidden" name="submitted_by" value="{{ request.user.id }}">
+    
+            <button type="button" id="submitBtn">Submit</button>
+        </form>
+    </div>
+    
+    <script>
+        // Autofill current week and year
+        function getCurrentWeekAndYear() {
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const startOfYear = new Date(currentYear, 0, 1);
+            const dayOfWeek = startOfYear.getDay();
+            const adjustDays = dayOfWeek <= 4 ? 1 - dayOfWeek : 8 - dayOfWeek;
+            const firstThursday = new Date(currentYear, 0, 1 + adjustDays);
+            const msDifference = currentDate - firstThursday;
+            const weekNumber = Math.ceil(msDifference / (7 * 24 * 60 * 60 * 1000));
+            const weekYear = weekNumber > 0 ? currentYear : currentYear - 1;
+            return `Week ${weekNumber}, ${weekYear}`;
+        }
+    
+        document.getElementById('date').value = getCurrentWeekAndYear();
+    
+        // Autocomplete for variety field
+        $(function () {
+    $("#variety").autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: "{% url 'get_variety_suggestions' %}",
+                data: { term: request.term },
+                success: function (data) {
+                    response(data.suggestions);  // [{ label: 'Variety X', value: 1 }, ...]
+                },
+                error: function (xhr, status, error) {
+                    console.error("Autocomplete error: ", error);
+                }
+            });
+        },
+        minLength: 1,
+        select: function (event, ui) {
+            $("#variety").val(ui.item.label);    // Show name
+            $("#variety_id").val(ui.item.value); // Store ID
+            return false;
+        }
+    });
+});
+
+
+        // Submit form via fetch
+        document.getElementById("submitBtn").addEventListener("click", function () {
+        const formElement = document.getElementById("weekEntryForm");
+        const formData = new FormData(formElement);
+
+        // Basic validation (optional)
+        const variety = formData.get("variety");
+        const amounts = formData.get("amounts");
+
+        if (!variety || !amounts) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        fetch("{% url 'submit_week_entry' %}", {
+            method: "POST",
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert(data.message);
+                window.location.href = "{% url 'week_form' %}";
+            } else {
+                alert("Error: " + data.error);
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
+
+    </script>
+    
+    
+</body>
+</html>
