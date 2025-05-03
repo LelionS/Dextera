@@ -37,23 +37,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-
     'accounts',
     'formflow',
 ]
 
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-)
 
-ACCOUNT_EMAIL_VERIFICATION = 'none'
-ACCOUNT_EMAIL_REQUIRED = False
-LOGIN_REDIRECT_URL = '/'
+
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/formflow/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -63,8 +56,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'Dextera.urls'

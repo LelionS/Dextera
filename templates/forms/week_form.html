@@ -52,33 +52,42 @@
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h2 style="color: #2E8B57; text-align: left;">Olij Propagation Kenya</h2>
-        <div class="user-info">
-            <span>Hi, {{ request.user.first_name }}</span>
-            <a href="{% url 'user_entries_list' %}"><i class="fas fa-list" style="margin-left: 140px;"></i> Entries</a>
-            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </div>
-    
-        <form id="weekEntryForm" method="post">
-            {% csrf_token %}
-            
-            <label for="variety">Variety (Autocomplete):</label>
-            <input type="text" id="variety" placeholder="Start typing a variety..." required>
-            <input type="hidden" name="variety" id="variety_id">
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+    <h2 style="color: #2E8B57; text-align: left; margin-bottom: 10px;">Olij Propagation Kenya</h2>
 
-            <label for="amounts">Amounts:</label>
-            <input type="number" id="amounts" name="amounts" required>
-    
-            <label for="date">Date (Week Number and Year):</label>
-            <input type="text" id="date" name="date" required readonly>
-    
-            <input type="hidden" name="submitted_by" value="{{ request.user.id }}">
-    
-            <button type="button" id="submitBtn">Submit</button>
-        </form>
+    <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 1rem;">Hi, {{ request.user.first_name }}</span>
+        <div>
+            <a href="{% url 'user_entries_list' %}" style="margin-right: 20px; text-decoration: none; color: #2E8B57;">
+                <i class="fas fa-list"></i> Entries
+            </a>
+            <a href="{% url 'logout' %}" style="text-decoration: none; color: #dc3545;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
     </div>
+
+    <form id="weekEntryForm" method="post">
+        {% csrf_token %}
+
+        <label for="variety" style="display: block; margin-bottom: 5px; font-weight: bold;">Variety (Autocomplete):</label>
+        <input type="text" id="variety" placeholder=" " required style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px;">
+        <input type="hidden" name="variety" id="variety_id">
+
+        <label for="amounts" style="display: block; margin-bottom: 5px; font-weight: bold;">Amounts:</label>
+        <input type="number" id="amounts" name="amounts" required style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px;">
+
+        <label for="date" style="display: block; margin-bottom: 5px; font-weight: bold;">Date (Week Number and Year):</label>
+        <input type="text" id="date" name="date" required readonly style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px;">
+
+        <input type="hidden" name="submitted_by" value="{{ request.user.id }}">
+
+        <button type="button" id="submitBtn" style="width: 100%; padding: 10px; background-color: #2E8B57; color: white; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer;">
+            Submit
+        </button>
+    </form>
+</body>
+
     
     <script>
         // Autofill current week and year

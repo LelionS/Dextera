@@ -24,27 +24,13 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from .models import Bay, Bed, Variety
 
-
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
-# def user_login(request):
-#     if request.method == "POST":
-#         username = request.POST.get('username', '')  
-#         password = request.POST.get('password', '')  
-#         user = authenticate(request, username=username, password=password)
 
-#         if user is not None:
-#             login(request, user)
-#             print("User authenticated successfully!")  # Debugging
-#             return redirect('week_form')
-#         else:
-#             messages.error(request, "Invalid username or password.")
-#             print("Authentication failed.")  # Debugging
-
-#     return render(request, 'accounts/signin.html')
 
 @login_required
 def user_logout(request):
@@ -185,18 +171,20 @@ def user_entries_list(request):
     """
     Display only the current user's submissions.
     Allow editing for 12 hours after submission.
+    Most recent entries appear first.
     """
     user = request.user
     twelve_hours_ago = now() - timedelta(hours=12)
 
-    # Get the user's own entries
-    entries = WeekEntry.objects.filter(submitted_by=user)
+    # Get the user's own entries ordered by creation date (descending)
+    entries = WeekEntry.objects.filter(submitted_by=user).order_by('-created_at')
 
-    # Add a flag to check if the entry is still editable
+    # Add an is_editable flag for each entry
     for entry in entries:
         entry.is_editable = entry.created_at >= twelve_hours_ago
 
     return render(request, "forms/user_entries.html", {"entries": entries})
+
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden

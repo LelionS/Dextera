@@ -18,7 +18,7 @@ urlpatterns = [
     # path('', views.user_login, name='login'),
     # path('accounts/login/', auth_views.LoginView.as_view(template_name='accounts/signin.html'), name='login'),
     path('logout/', views.user_logout, name='logout'),
-    path('week_form/', views.week_form, name='week_form'),
+    path('', views.week_form, name='week_form'),
     path('week-entry/', views.week_entry_form, name='week_entry_form'), 
     path('get_beds/', get_beds, name='get_beds'),
     path('get_varieties/', get_varieties, name='get_varieties'),  
