@@ -34,4 +34,7 @@ urlpatterns = [
 
      path('get_bed_and_bay_for_variety/', views.get_bed_and_bay_for_variety, name='get_bed_and_bay_for_variety'),
      path('get_variety_suggestions/', views.get_variety_suggestions, name='get_variety_suggestions'),
+
+     path('entries/<int:pk>/edit/', views.edit_entry_modal, name='edit_entry_modal'),
+     path('entries/user/<int:user_id>/history/', views.user_entry_history, name='user_entry_history'),
 ]

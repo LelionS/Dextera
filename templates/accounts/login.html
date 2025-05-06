@@ -12,8 +12,6 @@
         }
         .login-container {
             max-width: 400px;
-            margin: 60px auto;
-            padding: 30px;
             background-color: white;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -33,9 +31,12 @@
     </style>
 </head>
 <body>
-    <div class="container"  style="padding-top: 35%;">
-            <h2>Please Login!</h2>
+    <div class="container">
 
+        <a href="#" style="text-decoration: none;">
+            <h1 style="color: green;">Olij Propagation Kenya</h1>
+          </a>
+          <h2>Please Login To Proceed!</h2>
             {% if form.errors %}
                 <div class="alert alert-danger" role="alert">
                     Invalid username or password.

@@ -1,0 +1,9 @@
+<th>Updated By</th>
+...
+<td>
+  {% if entry.updated_by %}
+    <a href="{% url 'user_entry_history' entry.updated_by.id %}">{{ entry.updated_by.username }}</a>
+  {% else %}
+    <span class="text-muted">—</span>
+  {% endif %}
+</td>

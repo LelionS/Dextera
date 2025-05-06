@@ -308,3 +308,47 @@ def dynamic_dt_view(request):
     return render(request, "dyn_dt/index.html", context)
 
 
+from django.shortcuts import get_object_or_404, render, redirect
+from .models import WeekEntry
+
+def edit_entry_modal(request, pk):
+    entry = get_object_or_404(WeekEntry, pk=pk)
+
+    if request.method == 'POST':
+        entry.week = request.POST.get('week', entry.week)
+        entry.bay_id = request.POST.get('bay', entry.bay.id)
+        entry.bed_id = request.POST.get('bed', entry.bed.id)
+        entry.variety_id = request.POST.get('variety', entry.variety.id)
+        entry.amounts = request.POST.get('amounts', entry.amounts)
+        entry.save()
+
+        return redirect('week_entries')  
+
+    return render(request, 'partials/edit_entry_form.html', {'entry': entry})
+
+def edit_entry_modal(request, pk):
+    entry = get_object_or_404(WeekEntry, pk=pk)
+
+    if request.method == 'POST':
+        entry.week = request.POST.get('week', entry.week)
+        entry.bay_id = request.POST.get('bay', entry.bay.id)
+        entry.bed_id = request.POST.get('bed', entry.bed.id)
+        entry.variety_id = request.POST.get('variety', entry.variety.id)
+        entry.amounts = request.POST.get('amounts', entry.amounts)
+        entry.updated_by = request.user  # 👈 Track who made the update
+        entry.save()
+        return redirect('week_entries')  # or JsonResponse({'success': True})
+
+    return render(request, 'partials/edit_entry_form.html', {'entry': entry})
+
+# from django.shortcuts import render, get_object_or_404
+# from django.contrib.auth.models import User
+# from .models import WeekEntry
+
+# def user_entry_history(request, user_id):
+#     user = get_object_or_404(User, pk=user_id)
+#     entries = WeekEntry.objects.filter(submitted_by=user).order_by('-created_at')
+#     return render(request, 'formflow/user_history.html', {
+#         'user': user,
+#         'entries': entries
+#     })

@@ -1,0 +1,44 @@
+<form method="post" id="editEntryForm" action="/formflow/entries/{{ entry.id }}/edit/">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="week" class="form-label">Week</label>
+        <input type="text" class="form-control" id="week" name="week" value="{{ entry.week }}">
+    </div>
+    <div class="mb-3">
+        <label for="bay" class="form-label">Bay</label>
+        <input type="text" class="form-control" id="bay" name="bay" value="{{ entry.bay.id }}">
+    </div>
+    <div class="mb-3">
+        <label for="bed" class="form-label">Bed</label>
+        <input type="text" class="form-control" id="bed" name="bed" value="{{ entry.bed.id }}">
+    </div>
+    <div class="mb-3">
+        <label for="variety" class="form-label">Variety</label>
+        <input type="text" class="form-control" id="variety" name="variety" value="{{ entry.variety.id }}">
+    </div>
+    <div class="mb-3">
+        <label for="amounts" class="form-label">Amounts</label>
+        <input type="number" class="form-control" id="amounts" name="amounts" value="{{ entry.amounts }}">
+    </div>
+    <div class="text-end">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+</form>
+
+<script>
+document.getElementById("editEntryForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const form = this;
+    fetch(form.action || window.location.href, {
+        method: "POST",
+        body: new FormData(form),
+        headers: { "X-Requested-With": "XMLHttpRequest" }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();  // You can choose to update just the table row dynamically later
+        }
+    });
+});
+</script>
