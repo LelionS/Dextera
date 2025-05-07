@@ -57,3 +57,25 @@ def change_user_password(request, user_id):
             return redirect('user_management')
 
     return render(request, 'admin_panel/change_password.html', {'user': user})
+
+
+# accounts/views.py
+
+from django.contrib.auth.views import LoginView
+from django.urls import reverse
+from django.shortcuts import redirect
+
+class RoleBasedLoginView(LoginView):
+    template_name = 'accounts/login.html'  # same as before
+
+    def get_success_url(self):
+        user = self.request.user
+        # Respect ?next= if it exists
+        redirect_to = self.get_redirect_url()
+        if redirect_to:
+            return redirect_to
+
+        # Role-based redirect
+        if user.is_staff or user.is_superuser:
+            return reverse('week_entries')
+        return reverse('week_form')

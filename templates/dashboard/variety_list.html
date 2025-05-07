@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Varieties</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        body { padding: 2rem; background: #f9fafb; }
+        table { width: 100%; }
+        th, td { padding: 0.75em; text-align: left; }
+    </style>
+</head>
+<body>
+    <h1>🌿 Varieties</h1>
+    <p><a href="{% url 'staff_dashboard' %}">← Back to Dashboard</a></p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Bed</th>
+                <th>Bay</th>
+                <th>House</th>
+                <th>Location</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for variety in varieties %}
+            <tr>
+                <td>{{ variety.name }}</td>
+                <td>{{ variety.bed.code }}</td>
+                <td>{{ variety.bed.bay.name }}</td>
+                <td>{{ variety.bed.bay.house.name }}</td>
+                <td>{{ variety.bed.bay.house.name }} > {{ variety.bed.bay.name }} > {{ variety.bed.code }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

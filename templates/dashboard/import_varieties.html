@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Import Varieties</title>
+</head>
+<body>
+    <h1>📥 Import Varieties</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="excel_file" required>
+        <button type="submit">Upload</button>
+    </form>
+    <p><a href="{% url 'staff_dashboard' %}">← Back to Dashboard</a></p>
+</body>
+</html>

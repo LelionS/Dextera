@@ -352,3 +352,71 @@ def edit_entry_modal(request, pk):
 #         'user': user,
 #         'entries': entries
 #     })
+
+# views.py
+
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render
+
+@staff_member_required
+def staff_dashboard_view(request):
+    return render(request, 'admin/staff_dashboard.html')
+
+
+# views.py
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render
+from formflow.models import Variety
+
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth.models import User
+from formflow.models import House, Bay, Bed, Variety
+import openpyxl
+
+@staff_member_required
+def import_varieties_view(request):
+    if request.method == "POST":
+        excel_file = request.FILES.get("excel_file")
+        try:
+            wb = openpyxl.load_workbook(excel_file)
+            sheet = wb.active
+            for row in sheet.iter_rows(min_row=2, values_only=True):
+                house_name, bay_name, bed_code, variety_name = row
+                if not all([house_name, bay_name, bed_code, variety_name]):
+                    continue
+                house, _ = House.objects.get_or_create(name=house_name)
+                bay, _ = Bay.objects.get_or_create(name=bay_name, house=house)
+                bed, _ = Bed.objects.get_or_create(code=bed_code, bay=bay)
+                Variety.objects.create(name=variety_name, bed=bed)
+            messages.success(request, "Varieties imported successfully.")
+            return redirect("variety_list")
+        except Exception as e:
+            messages.error(request, f"Error reading Excel file: {e}")
+    return render(request, "dashboard/import_varieties.html")
+
+@staff_member_required
+def variety_list_view(request):
+    varieties = Variety.objects.select_related('bed__bay__house').all()
+    return render(request, 'dashboard/variety_list.html', {'varieties': varieties})
+
+@staff_member_required
+def bed_list_view(request):
+    beds = Bed.objects.select_related('bay__house').all()
+    return render(request, 'dashboard/bed_list.html', {'beds': beds})
+
+@staff_member_required
+def bay_list_view(request):
+    bays = Bay.objects.select_related('house').all()
+    return render(request, 'dashboard/bay_list.html', {'bays': bays})
+
+@staff_member_required
+def house_list_view(request):
+    houses = House.objects.all()
+    return render(request, 'dashboard/house_list.html', {'houses': houses})
+
+@staff_member_required
+def user_list_view(request):
+    users = User.objects.all()
+    return render(request, 'dashboard/user_list.html', {'users': users})

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>Houses</title></head>
+<body>
+<h1>🏠 Houses</h1>
+<table>
+    <tr><th>Name</th></tr>
+    {% for house in houses %}
+    <tr><td>{{ house.name }}</td></tr>
+    {% endfor %}
+</table>
+<p><a href="{% url 'staff_dashboard' %}">← Back to Dashboard</a></p>
+</body>
+</html>

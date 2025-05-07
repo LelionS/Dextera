@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>Beds</title></head>
+<body>
+<h1>🛏 Beds</h1>
+<table>
+    <tr><th>Code</th><th>Bay</th><th>House</th></tr>
+    {% for bed in beds %}
+    <tr><td>{{ bed.code }}</td><td>{{ bed.bay.name }}</td><td>{{ bed.bay.house.name }}</td></tr>
+    {% endfor %}
+</table>
+<p><a href="{% url 'staff_dashboard' %}">← Back to Dashboard</a></p>
+</body>
+</html>
