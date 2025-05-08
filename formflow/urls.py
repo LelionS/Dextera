@@ -37,7 +37,7 @@ urlpatterns = [
 
     path('entries/<int:pk>/edit/', views.edit_entry_modal, name='edit_entry_modal'),
 
-    path('staff-dashboard/', staff_dashboard_view, name='staff_dashboard'),
+    path('s-dashboard/taff', staff_dashboard_view, name='staff_dashboard'),
 
     path("dashboard/import-varieties/", views.import_varieties_view, name="import_varieties"),
     path("dashboard/varieties/", views.variety_list_view, name="variety_list"),
