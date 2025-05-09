@@ -1,129 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Varieties | Admin Dashboard</title>
+{% extends "include/sidenav.html" %}
+{% load static %}
 
-    <!-- Pico CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+{% block content %}
+<style>
+    body {
+        background-color: #fff;
+        color: #000;
+        font-size: 14px;
+    }
 
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    .dataTables_wrapper .dataTables_paginate .pagination {
+        justify-content: center;
+        gap: 5px;
+        margin-top: 15px;
+    }
 
-    <!-- DataTables CSS + Buttons Extension -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    .dataTables_wrapper .dataTables_paginate .page-item .page-link {
+        color: #555;
+        background: transparent;
+        border: 1px solid #ddd;
+        border-radius: 0.25rem;
+        padding: 5px 10px;
+    }
 
-<!-- jQuery + DataTables + Buttons + JSZip + pdfmake -->
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    .dataTables_wrapper .dataTables_paginate .page-item.active .page-link {
+        background-color: #128318;
+        color: #fff;
+        border-color: #128318;
+    }
 
-    <style>
-        body {
-            padding: 2rem;
-            background-color: #000000;
-        }
-    
-        .container {
-            max-width: 95%;
-            margin: auto;
-        }
-    
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-    
-        h1 {
-            margin-bottom: 0.5rem;
-        }
-    
-        .back-link {
-            margin-bottom: 1rem;
-            display: inline-block;
-        }
-    
-        table.dataTable th,
-        table.dataTable td {
-            text-align: left;
-            padding: 0.25em 0.5em; /* ✅ Smaller padding */
-            font-size: 0.88rem;    /* ✅ Slightly smaller text */
-            line-height: 1.3;       /* ✅ Tight line spacing */
-        }
-    
-        table.dataTable thead input {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 4px;
-            font-size: 0.85rem;
-        }
-    
-        table.dataTable {
-            width: 100% !important;
-        }
-    
-        table.dataTable thead th {
-            background-color: #f1f5fb;
-        }
-    </style>
-    
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>🌿 Varieties</h1>
-        </header>
+    .dataTables_wrapper .dataTables_paginate .page-item .page-link:hover {
+        background-color: #f0f0f0;
+    }
 
-        <p class="back-link"><a href="{% url 'staff_dashboard' %}">← Back to Dashboard</a></p>
+    th input.form-control-sm {
+        font-size: 13px;
+    }
 
-        <table id="varieties-table" class="display nowrap">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Bed</th>
-                    <th>Bay</th>
-                    <th>House</th>
-                    <th>Location</th>
-                </tr>
-                <tr>
-                    <th><input type="text" placeholder="Filter name" /></th>
-                    <th><input type="text" placeholder="Filter bed" /></th>
-                    <th><input type="text" placeholder="Filter bay" /></th>
-                    <th><input type="text" placeholder="Filter house" /></th>
-                    <th><input type="text" placeholder="Filter location" /></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for variety in varieties %}
-                <tr>
-                    <td>{{ variety.name }}</td>
-                    <td>{{ variety.bed.code }}</td>
-                    <td>{{ variety.bed.bay.name }}</td>
-                    <td>{{ variety.bed.bay.house.name }}</td>
-                    <td>{{ variety.bed.bay.house.name }} > {{ variety.bed.bay.name }} > {{ variety.bed.code }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    .export-buttons .btn {
+        margin-left: 5px;
+    }
+</style>
+
+<div class="pc-container mt-2">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mb-3">🌿 Varieties</h5>
+            <p><a href="{% url 'staff_dashboard' %}" class="text-decoration-none">← Back to Dashboard</a></p>
+            <div class="d-flex justify-content-end mb-3">
+                <div class="export-buttons"></div>
+            </div>
+
+            <table id="varieties-table" class="table table-striped table-bordered" style="font-size: 13px;">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Bed</th>
+                        <th>Bay</th>
+                        <th>House</th>
+                        <th>Location</th>
+                    </tr>
+                    <tr class="bg-white">
+                        <th><input type="text" class="form-control form-control-sm" placeholder="Filter name" /></th>
+                        <th><input type="text" class="form-control form-control-sm" placeholder="Filter bed" /></th>
+                        <th><input type="text" class="form-control form-control-sm" placeholder="Filter bay" /></th>
+                        <th><input type="text" class="form-control form-control-sm" placeholder="Filter house" /></th>
+                        <th><input type="text" class="form-control form-control-sm" placeholder="Filter location" /></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for variety in varieties %}
+                    <tr>
+                        <td>{{ variety.name }}</td>
+                        <td>{{ variety.bed.code }}</td>
+                        <td>{{ variety.bed.bay.name }}</td>
+                        <td>{{ variety.bed.bay.house.name }}</td>
+                        <td>{{ variety.bed.bay.house.name }} > {{ variety.bed.bay.name }} > {{ variety.bed.code }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
+</div>
+{% endblock content %}
 
-    <!-- jQuery + DataTables -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-    <script>
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+<script>
     $(document).ready(function () {
-        // Add column-specific search inputs
         $('#varieties-table thead tr:eq(1) th').each(function (i) {
             $('input', this).on('keyup change', function () {
                 if ($('#varieties-table').DataTable().column(i).search() !== this.value) {
@@ -135,39 +109,45 @@
             });
         });
 
-        // Init DataTable with export buttons
         $('#varieties-table').DataTable({
             responsive: true,
-            pageLength: 10,
-            lengthChange: false,
             orderCellsTop: true,
             fixedHeader: true,
-            dom: 'Bfrtip',
+            pageLength: 14,
+            dom: '<"row mb-2"<"col-sm-6"l><"col-sm-6 text-end"Bf>>tip',
             buttons: [
                 {
                     extend: 'csvHtml5',
-                    text: 'Export CSV',
-                    className: 'button'
+                    className: 'btn btn-outline-secondary btn-sm',
+                    text: 'CSV'
                 },
                 {
                     extend: 'excelHtml5',
-                    text: 'Export Excel',
-                    className: 'button'
+                    className: 'btn btn-outline-success btn-sm',
+                    text: 'Excel'
                 },
                 {
                     extend: 'pdfHtml5',
-                    text: 'Export PDF',
-                    className: 'button'
+                    className: 'btn btn-outline-danger btn-sm',
+                    text: 'PDF',
+                    orientation: 'landscape'
                 },
                 {
                     extend: 'print',
-                    text: 'Print',
-                    className: 'button'
+                    className: 'btn btn-outline-primary btn-sm',
+                    text: 'Print'
                 }
-            ]
+            ],
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search...",
+                lengthMenu: "Show _MENU_ entries",
+                paginate: {
+                    previous: "<",
+                    next: ">"
+                }
+            }
         });
     });
 </script>
-
-</body>
-</html>
+{% endblock extra_js %}

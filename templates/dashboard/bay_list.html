@@ -1,14 +1,58 @@
-<!DOCTYPE html>
-<html>
-<head><title>Bays</title></head>
-<body>
-<h1>🧱 Bays</h1>
-<table>
-    <tr><th>Name</th><th>House</th></tr>
-    {% for bay in bays %}
-    <tr><td>{{ bay.name }}</td><td>{{ bay.house.name }}</td></tr>
-    {% endfor %}
-</table>
-<p><a href="{% url 'staff_dashboard' %}">← Back to Dashboard</a></p>
-</body>
-</html>
+{% extends "include/sidenav.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+
+    .grid {
+            padding-top: 35px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+    .card {
+        background: rgb(255, 255, 255);
+        padding: 1.5em;
+        border-radius: 10px;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+    }
+
+    .card h2, .card h1 {
+        color: #0a3122;
+    }
+
+    .card a {
+        display: inline-block;
+        margin-top: 0.5em;
+        color: #0a3122;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+    .card a:hover {
+        text-decoration: underline;
+    }
+
+    .card p {
+        color: #3d8d6f;
+    }
+</style>
+
+<div class="pc-container mt-2">
+    <div class="card" style="height: 895px;">
+        <div class="card-body">
+            <h1>🧱 Bays</h1>
+            <p><a href="{% url 'staff_dashboard' %}" class="text-decoration-none">← Back to Dashboard</a></p>
+            <table>
+                <tr><th>Name</th><th>House</th></tr>
+                {% for bay in bays %}
+                <tr><td>{{ bay.name }}</td><td>{{ bay.house.name }}</td></tr>
+                {% endfor %}
+            </table>
+                    </div>
+                </div>
+            </div>
+{% endblock content %}
+

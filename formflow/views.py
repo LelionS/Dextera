@@ -420,3 +420,7 @@ def house_list_view(request):
 def user_list_view(request):
     users = User.objects.all()
     return render(request, 'dashboard/user_list.html', {'users': users})
+
+@staff_member_required
+def dashboard_view(request):
+    return render(request, "admin/staff_dashboard.html")

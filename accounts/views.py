@@ -77,5 +77,5 @@ class RoleBasedLoginView(LoginView):
 
         # Role-based redirect
         if user.is_staff or user.is_superuser:
-            return reverse('week_entries')
+            return reverse('dashboard')
         return reverse('week_form')
